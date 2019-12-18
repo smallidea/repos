@@ -2,3 +2,94 @@
     Layout = null;
 }
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Repos</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link href="~/css/dsSelect.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <div class="dsSelect" id="dsSelectTemp">
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <button class="btn" type="button" id="btnSubmit">提交</button>
+            </div>
+        </div>
+        <div class="row">
+            <textarea style="width:100%; height:80px" id="txtSelected"></textarea>
+        </div>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2019 - leansoftX.com
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" ></script>
+    <script src="~/js/dsSelect.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            let dsSelectObj = new dsSelect("dsSelectTemp");
+            dsSelectObj.multiSelect = true;
+            dsSelectObj.init();
+            let datas = [
+                { id: "1", name: "选项1" },
+                { id: "2", name: "选项2" },
+                { id: "3", name: "选项3" },
+                { id: "4", name: "选项4" },
+                { id: "5", name: "选项5" },
+                { id: "6", name: "选项6" },
+                { id: "7", name: "选项7" },
+                { id: "8", name: "选项8" },
+                { id: "9", name: "选项9" },
+                { id: "0", name: "选项0" },
+                { id: "10", name: "选项10" },
+                { id: "11", name: "选项11" },
+                { id: "12", name: "选项12" },
+                { id: "13", name: "选项13" },
+                { id: "14", name: "选项14" },
+                { id: "15", name: "选项15" },
+            ];
+            let datasR = [
+                { id: "16", name: "选项16" },
+                { id: "17", name: "选项17" },
+                { id: "18", name: "选项18" },
+                { id: "19", name: "选项19" },
+            ];
+            dsSelectObj.setLeftData(datas, "name");
+            dsSelectObj.setRightData(datasR, "name");
+
+            $("#btnSubmit").click(function() {
+                $("#txtSelected").val(JSON.stringify(dsSelectObj.getSelectRightValus()));
+            });
+        });
+
+        function leftValues() {
+            alert(JSON.stringify(dsSelectObj.getSelectLeftValus()));
+        }
+        function rightValues() {
+            alert(JSON.stringify(dsSelectObj.getSelectRightValus()));
+        }
+        function disableButtons() {
+            dsSelectObj.disableButtons();
+        }
+
+        function start() {
+            dsSelectObj.restartButtons();
+        }
+    </script>
+</body>
+</html>
