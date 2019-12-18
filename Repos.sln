@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repos", "Repos\Repos.csproj", "{4A716C59-41AC-4F98-B74A-1ECD0AF6C5AF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadMe", "ReadMe", "{F0E81A32-4312-4A9C-8D51-5F99154B502E}"
+	ProjectSection(SolutionItems) = preProject
+		Repos\DataBase.sql = Repos\DataBase.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,7 +25,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		VisualSVNWorkingCopyRoot = .
 		SolutionGuid = {D03354EF-6A42-40C2-B596-2742DAE472D2}
+		VisualSVNWorkingCopyRoot = .
 	EndGlobalSection
 EndGlobal
