@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -25,7 +26,7 @@ namespace Repos.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private const string _api = "https://api.github.com/users/leansoftx/repos";
-        private readonly static SqlHelper _sqlHelper = new SqlHelper("Database=leansoftX.Repos;Server=10.10.14.54;UID=sa;Password=nj@68888;");
+        private readonly static SqlHelper _sqlHelper = new SqlHelper(AppConfigurtaionServices.Configuration.GetConnectionString("ReposConnectionStr"));
 
         public HomeController(ILogger<HomeController> logger)
         {
