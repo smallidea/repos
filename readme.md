@@ -18,10 +18,8 @@ Repos选择发送邮件功能
 #源码结构
 
 **开发使用.net core mvc模式**
-文件夹 | 用途
----|---
-wwwroot | 资源文件
-Controllers | MVC控制器
-Dto | 数据传输对象
-Views | 视图
-Lib | 公用类
+- wwwroot       资源文件
+- Controllers   MVC控制器
+- Dto           数据传输对象
+- Views         视图
+- Lib           公用类
