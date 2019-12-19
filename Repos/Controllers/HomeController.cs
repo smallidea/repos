@@ -101,7 +101,8 @@ namespace Repos.Controllers
         {
             var sql = @"select a.[ID], [CodeNo], [Name], [FullName], [GitUrl], [Content], (case when my.ID is null then 0 else 1 end) IsCheck 
                         from[AllRepos] a
-                        left join[MyRepos] my on my.ID = a.ID";
+                        left join[MyRepos] my on my.ID = a.ID
+                        order by [Name]";
             var dt = _sqlHelper.ExecuteDataTable(sql);
             var tmpList = from a in dt.AsEnumerable()
                           select new RepoDto()
