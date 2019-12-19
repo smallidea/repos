@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadMe", "ReadMe", "{F0E81A32-4312-4A9C-8D51-5F99154B502E}"
 	ProjectSection(SolutionItems) = preProject
 		ReadMe\DataBase.sql = ReadMe\DataBase.sql
+		ReadMe.md = ReadMe.md
 	EndProjectSection
 EndProject
 Global
