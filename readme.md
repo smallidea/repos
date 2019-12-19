@@ -4,8 +4,10 @@ Repos选择发送邮件功能
 
 #部署
 1. 创建数据库（名称为leansoftX.Repos），打开DataBase.sql文件复制到查询分析器，创建数据库表
-2. 在部署电脑（服务器）上安装.net core3.0,详见 https://dotnet.microsoft.com/download/linux-package-manager/centos7/sdk-current
+2. 在部署电脑（服务器）上安装.net core3.0
 3. 在部署电脑（服务器）的iis上创建站点，并配置好端口，比如666
+4. 复制文件到iis站点的根目录下
+5. 修改连接字符串，修改appsettings.json中的“ReposConnectionStr”的属性值
 4. 在部署电脑（服务器）上使用localhost:666访问页面
 
 #操作说明
