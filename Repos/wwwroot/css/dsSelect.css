@@ -13,7 +13,7 @@
     }
 
     .dsSelect .center {
-        /*width: 100px;*/
+        width: 20%;
         text-align: center;
         vertical-align: middle;
         border: none;
@@ -31,12 +31,14 @@
     }
 
         .dsSelect .dsList li {
-            /*border: solid thin #73879C;*/
-            width: 90%;
+            border: solid thin #73879C;
+            width: 98%;
             margin: 2px auto;
             font-size: 16px;
             line-height: 35px;
             cursor: pointer;
+            text-align: left;
+            padding:0 5px 0 5px;
         }
 
             .dsSelect .dsList li:hover {

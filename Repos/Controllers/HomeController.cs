@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using Repos.Dto;
 using Repos.Lib;
 using Repos.Models;
 
@@ -25,7 +26,7 @@ namespace Repos.Controllers
         private readonly ILogger<HomeController> _logger;
         private const string _api = "https://api.github.com/users/leansoftx/repos";
         private readonly static SqlHelper _sqlHelper = new SqlHelper("Database=leansoftX.Repos;Server=10.10.14.54;UID=sa;Password=nj@68888;");
-        
+
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -98,7 +99,6 @@ namespace Repos.Controllers
         /// <returns></returns>
         private List<RepoDto> getReposWithDb()
         {
-            //List<RepoDto> list = new List<RepoDto>();
             var sql = @"select a.[ID], [CodeNo], [Name], [FullName], [GitUrl], [Content], (case when my.ID is null then 0 else 1 end) IsCheck 
                         from[AllRepos] a
                         left join[MyRepos] my on my.ID = a.ID";
@@ -130,7 +130,7 @@ namespace Repos.Controllers
             myHttpClient.DefaultRequestHeaders.Add("User-Agent", "leansoftX.Repos");
             var response = myHttpClient.GetAsync(_api).Result;
             var json = response.Content.ReadAsStringAsync().Result;
-            var array = ConvertToObj<JArray>(json);
+            var array = JasonHelper.ConvertToObj<JArray>(json);
 
             foreach (var item in array)
             {
@@ -142,7 +142,7 @@ namespace Repos.Controllers
                     FullName = repo.full_name,
                     Id = repo.id,
                     GitUrl = repo.git_url,
-                    Content = ConvertToStr(repo)
+                    Content = JasonHelper.ConvertToStr(repo)
                 };
                 list.Add(reposDto);
             }
@@ -162,7 +162,7 @@ namespace Repos.Controllers
             int rows = 0;
             foreach (var item in list)
             {
-               string sql2 = $@"insert into [dbo].[AllRepos]([ID], [CodeNo], [Name], [FullName], [Content], [GitUrl], [CreateTime])
+                string sql2 = $@"insert into [dbo].[AllRepos]([ID], [CodeNo], [Name], [FullName], [Content], [GitUrl], [CreateTime])
 values(@ID,@CodeNo,@Name,@FullName,@Content,@GitUrl,getdate());";
                 rows += _sqlHelper.ExecuteNonQuery(sql2, new SqlParameter[]
                 {
@@ -176,71 +176,14 @@ values(@ID,@CodeNo,@Name,@FullName,@Content,@GitUrl,getdate());";
             }
             return rows > 0;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        private T ConvertToObj<T>(string json)
-        {
-            if (string.IsNullOrEmpty(json) || json == "{}" || json == "[]")
-            {
-                return default(T);
-            }
-
-            JsonSerializerSettings settings = new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
-
-            json = json.TrimStart('\"');
-            json = json.TrimEnd('\"');
-            json = json.Replace("\\", ""); //????
-            return JsonConvert.DeserializeObject<T>(json, settings);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        private string ConvertToStr(object obj)
-        {
-            //return JsonConvert.SerializeObject(obj);
-
-            var timeConverter = new IsoDateTimeConverter
-            {
-                DateTimeFormat = "yyyy-MM-dd HH:mm:ss"
-            };
-            return JsonConvert.SerializeObject(obj, Formatting.None, timeConverter); //Formatting.None 防止带有转义字符的json字符串
-        }
     }
 
     /// <summary>
-    /// 
+    /// 提交参数
     /// </summary>
     public class SendParam
     {
         public int[] Ids { get; set; }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public class RepoDto
-    {
-        public string CodeNo { get; set; }
-        public string Name { get; set; }
-        public string FullName { get; set; }
-
-        public string Content { get; set; }
-
-        public int Id { get; set; }
-
-        public string GitUrl { get; set; }
-
-        public bool IsCheck { get; set; } = false;
-    }
 }
