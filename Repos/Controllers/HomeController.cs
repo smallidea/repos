@@ -1,6 +1,18 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
+using Repos.Lib;
 using Repos.Models;
 
 namespace Repos.Controllers
@@ -11,7 +23,9 @@ namespace Repos.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
+        private const string _api = "https://api.github.com/users/leansoftx/repos";
+        private readonly static SqlHelper _sqlHelper = new SqlHelper("Database=leansoftX.Repos;Server=10.10.14.54;UID=sa;Password=nj@68888;");
+        
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -21,12 +35,212 @@ namespace Repos.Controllers
         {
             return View();
         }
-               
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        /// <summary>
+        /// 获取数据
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [HttpPost]
+        public IActionResult GetData()
+        {
+            // 从数据库中查找
+            var list = getReposWithDb();
+
+            // 如果没有就去解析API
+            if (list == null || list.Count <= 0)
+            {
+                list = getReposWithApi();
+                insertRpos4Db(list);
+            }
+
+            return Ok(list);
+        }
+
+        /// <summary>
+        /// 提交选中的
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult SendMyRepos([FromBody]SendParam param)
+        {
+            var result = send(param.Ids);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 提交数据
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        private bool send(int[] ids)
+        {
+            StringBuilder sb = new StringBuilder("delete from [MyRepos];");
+            foreach (var id in ids)
+            {
+                sb.Append($@"insert into MyRepos([ID], [CreateTime]) values({id}, getdate());");
+            }
+            var result = _sqlHelper.ExecuteNonQuery(sb.ToString());
+            return result > 0;
+        }
+
+        /// <summary>
+        /// 从数据库中获取信息
+        /// </summary>
+        /// <returns></returns>
+        private List<RepoDto> getReposWithDb()
+        {
+            //List<RepoDto> list = new List<RepoDto>();
+            var sql = @"select a.[ID], [CodeNo], [Name], [FullName], [GitUrl], [Content], (case when my.ID is null then 0 else 1 end) IsCheck 
+                        from[AllRepos] a
+                        left join[MyRepos] my on my.ID = a.ID";
+            var dt = _sqlHelper.ExecuteDataTable(sql);
+            var tmpList = from a in dt.AsEnumerable()
+                          select new RepoDto()
+                          {
+                              Id = a.Field<int>("ID"),
+                              CodeNo = a.Field<string>("CodeNo"),
+                              Name = a.Field<string>("Name"),
+                              FullName = a.Field<string>("FullName"),
+                              GitUrl = a.Field<string>("GitUrl"),
+                              Content = a.Field<string>("Content"),
+                              IsCheck = a.Field<int>("IsCheck") == 1
+                          };
+
+            return tmpList.ToList();
+        }
+
+        /// <summary>
+        /// 从API中获取信息
+        /// </summary>
+        /// <returns></returns>
+        private List<RepoDto> getReposWithApi()
+        {
+            List<RepoDto> list = new List<RepoDto>();
+
+            HttpClient myHttpClient = new HttpClient();
+            myHttpClient.DefaultRequestHeaders.Add("User-Agent", "leansoftX.Repos");
+            var response = myHttpClient.GetAsync(_api).Result;
+            var json = response.Content.ReadAsStringAsync().Result;
+            var array = ConvertToObj<JArray>(json);
+
+            foreach (var item in array)
+            {
+                dynamic repo = item;
+                RepoDto reposDto = new RepoDto
+                {
+                    Name = repo.name,
+                    CodeNo = repo.node_id,
+                    FullName = repo.full_name,
+                    Id = repo.id,
+                    GitUrl = repo.git_url,
+                    Content = ConvertToStr(repo)
+                };
+                list.Add(reposDto);
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// 提交数据到数据库
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        private bool insertRpos4Db(List<RepoDto> list)
+        {
+            if (list == null || list.Count <= 0) return false;
+
+            int rows = 0;
+            foreach (var item in list)
+            {
+               string sql2 = $@"insert into [dbo].[AllRepos]([ID], [CodeNo], [Name], [FullName], [Content], [GitUrl], [CreateTime])
+values(@ID,@CodeNo,@Name,@FullName,@Content,@GitUrl,getdate());";
+                rows += _sqlHelper.ExecuteNonQuery(sql2, new SqlParameter[]
+                {
+                    new SqlParameter("@ID", item.Id),
+                    new SqlParameter("@CodeNo", item.CodeNo),
+                    new SqlParameter("@Name", item.Name),
+                    new SqlParameter("@FullName",item.FullName),
+                    new SqlParameter("@Content", item.Content),
+                    new SqlParameter("@GitUrl", item.GitUrl),
+                });
+            }
+            return rows > 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        private T ConvertToObj<T>(string json)
+        {
+            if (string.IsNullOrEmpty(json) || json == "{}" || json == "[]")
+            {
+                return default(T);
+            }
+
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+            json = json.TrimStart('\"');
+            json = json.TrimEnd('\"');
+            json = json.Replace("\\", ""); //????
+            return JsonConvert.DeserializeObject<T>(json, settings);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private string ConvertToStr(object obj)
+        {
+            //return JsonConvert.SerializeObject(obj);
+
+            var timeConverter = new IsoDateTimeConverter
+            {
+                DateTimeFormat = "yyyy-MM-dd HH:mm:ss"
+            };
+            return JsonConvert.SerializeObject(obj, Formatting.None, timeConverter); //Formatting.None 防止带有转义字符的json字符串
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class SendParam
+    {
+        public int[] Ids { get; set; }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class RepoDto
+    {
+        public string CodeNo { get; set; }
+        public string Name { get; set; }
+        public string FullName { get; set; }
+
+        public string Content { get; set; }
+
+        public int Id { get; set; }
+
+        public string GitUrl { get; set; }
+
+        public bool IsCheck { get; set; } = false;
     }
 }

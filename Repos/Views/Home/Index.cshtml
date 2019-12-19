@@ -23,11 +23,13 @@
         </div>
         <div class="row">
             <div class="span12">
-                <button class="btn" type="button" id="btnSubmit">提交</button>
+                <button id="btnSubmit" type="button" class="btn btn-primary" data-toggle="button">Sent</button>
             </div>
         </div>
         <div class="row">
-            <textarea style="width:100%; height:80px" id="txtSelected"></textarea>
+            <textarea style="width:100%; height:80px" id="txtSelected">
+My Repo List
+</textarea>
         </div>
     </div>
 
@@ -38,45 +40,70 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" ></script>
+    <script src="~/js/site.js"></script>
     <script src="~/js/dsSelect.js"></script>
     <script type="text/javascript">
         $(function () {
             let dsSelectObj = new dsSelect("dsSelectTemp");
             dsSelectObj.multiSelect = true;
             dsSelectObj.init();
-            let datas = [
-                { id: "1", name: "选项1" },
-                { id: "2", name: "选项2" },
-                { id: "3", name: "选项3" },
-                { id: "4", name: "选项4" },
-                { id: "5", name: "选项5" },
-                { id: "6", name: "选项6" },
-                { id: "7", name: "选项7" },
-                { id: "8", name: "选项8" },
-                { id: "9", name: "选项9" },
-                { id: "0", name: "选项0" },
-                { id: "10", name: "选项10" },
-                { id: "11", name: "选项11" },
-                { id: "12", name: "选项12" },
-                { id: "13", name: "选项13" },
-                { id: "14", name: "选项14" },
-                { id: "15", name: "选项15" },
-            ];
-            let datasR = [
-                { id: "16", name: "选项16" },
-                { id: "17", name: "选项17" },
-                { id: "18", name: "选项18" },
-                { id: "19", name: "选项19" },
-            ];
-            dsSelectObj.setLeftData(datas, "name");
-            dsSelectObj.setRightData(datasR, "name");
+            loadData(dsSelectObj);
 
-            $("#btnSubmit").click(function() {
-                $("#txtSelected").val(JSON.stringify(dsSelectObj.getSelectRightValus()));
+            // 发送邮件 + 保存(如果都没有发送就没有保存,每次选择都保存比较浪费)
+            $("#btnSubmit").click(function () {
+                var ids = [];
+
+                // 显示数据到文本框
+                var text = "My Repo List";
+                var items = dsSelectObj.getSelectRightValus();
+                $(items).each(function (index, element) {
+                    text = text + " \n" + element.name + ": " + element.gitUrl;
+                    ids.push(element.id);
+                });
+                $("#txtSelected").val(text);
+
+                // 提交数据
+                sendData(ids); 
             });
         });
 
+        // 加载数据
+        function loadData(dsSelectObj) {
+            var url = "@Url.Action("GetData")";
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: {},
+                success: function (result) {
+                    var leftArray = [];
+                    var rightArray = [];
+                    $(result).each(function (index, element) {
+                        if (element.isCheck)
+                            rightArray.push(element);
+                        else
+                            leftArray.push(element);
+                    });
+                    dsSelectObj.setLeftData(leftArray, "name");
+                    dsSelectObj.setRightData(rightArray, "name");
+                }
+            });
+        }
+
+        // 提交数据
+        function sendData(ids) {
+            var url = "@Url.Action("SendMyRepos")";
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: url,
+                data: JSON.stringify({ ids: ids }),
+                success: function (result) {
+
+                }
+            });
+        }
+
+        /*
         function leftValues() {
             alert(JSON.stringify(dsSelectObj.getSelectLeftValus()));
         }
@@ -90,6 +117,7 @@
         function start() {
             dsSelectObj.restartButtons();
         }
+        */
     </script>
 </body>
 </html>

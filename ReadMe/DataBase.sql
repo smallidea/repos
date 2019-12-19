@@ -23,9 +23,12 @@ go
 /* Table: AllRepos                                              */
 /*==============================================================*/
 create table AllRepos (
-   ID                   int                  identity,
-   CodeNo               varchar(20)          not null,
-   Content              varchar(Max)         not null,
+   ID                   int                  not null,
+   CodeNo               varchar(100)         not null,
+   Name                 varchar(30)          null,
+   FullName             varchar(50)          null,
+   Content              text                 not null,
+   GitUrl               varchar(500)         null,
    CreateTime           datetime             not null default getdate(),
    constraint PK_ALLREPOS primary key (ID)
 )
@@ -35,8 +38,9 @@ go
 /* Table: MyRepos                                               */
 /*==============================================================*/
 create table MyRepos (
-   ID                   int                  null,
-   CreateTime           datetime             not null default getdate()
+   ID                   int                  not null,
+   CreateTime           datetime             not null default getdate(),
+   constraint PK_MYREPOS primary key (ID)
 )
 go
 
