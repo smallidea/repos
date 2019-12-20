@@ -125,10 +125,10 @@ let dsSelect_models={
             '</ul>' +
             '</div>' +
             '<div class="center">' +
-            '<div class="dsButton selectRight"> > </div>' +
-            '<div class="dsButton selectLeft"> < </div>' +
-            '<div class="dsButton allRight"> >>> </div>' +
-            '<div class="dsButton allLeft"> <<< </div>' +
+            '<div class="dsButton selectRight"> >> </div>' +
+            '<div class="dsButton selectLeft"> << </div>' +
+            //'<div class="dsButton allRight"> >>> </div>' +
+            //'<div class="dsButton allLeft"> <<< </div>' +
             '</div>' +
             '<div class="right">'+
             '<ul class="dsList">' +
