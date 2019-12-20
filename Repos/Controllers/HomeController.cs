@@ -1,50 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Repos.Dto;
 using Repos.Lib;
 using Repos.Models;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
 
 namespace Repos.Controllers
 {
     /// <summary>
     /// 
     /// </summary>
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        private readonly ILogger<HomeController> _logger;
+        #region 私有成员
         private const string _api = "https://api.github.com/users/leansoftx/repos";
         private readonly static SqlHelper _sqlHelper = new SqlHelper(AppConfigurtaionServices.Configuration.GetConnectionString("ReposConnectionStr"));
+        #endregion
 
-        public HomeController(ILogger<HomeController> logger)
+        #region ctor
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="logger"></param>
+        public HomeController(ILogger<HomeController> logger) : base(logger)
         {
-            _logger = logger;
+            
         }
+        #endregion
 
+        #region view
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             return View();
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        #endregion
 
+        #region API
         /// <summary>
         /// 获取数据
         /// </summary>
@@ -77,7 +90,9 @@ namespace Repos.Controllers
             var result = send(param.Ids);
             return Ok(result);
         }
+        #endregion
 
+        #region 私有函数
         /// <summary>
         /// 提交数据
         /// </summary>
@@ -129,7 +144,7 @@ namespace Repos.Controllers
             List<RepoDto> list = new List<RepoDto>();
 
             HttpClient myHttpClient = new HttpClient();
-            myHttpClient.DefaultRequestHeaders.Add("User-Agent", "leansoftX.Repos");
+            myHttpClient.DefaultRequestHeaders.Add("User-Agent", "leansoftX.Repos"); // 请求git的api接口需要带上应用信息，否则会报错
             var response = myHttpClient.GetAsync(_api).Result;
             var json = response.Content.ReadAsStringAsync().Result;
             var array = JasonHelper.ConvertToObj<JArray>(json);
@@ -178,6 +193,7 @@ values(@ID,@CodeNo,@Name,@FullName,@Content,@GitUrl,getdate());";
             }
             return rows > 0;
         }
+        #endregion
     }
 
     /// <summary>

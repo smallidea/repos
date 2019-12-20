@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadMe", "ReadMe", "{F0E81A
 		ReadMe.md = ReadMe.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Log4Net.JasonLog.Core", "Log4Net.JasonLog.Core\Log4Net.JasonLog.Core.csproj", "{2E516FE3-7A6D-45DD-8F85-955A983404A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,12 +23,16 @@ Global
 		{4A716C59-41AC-4F98-B74A-1ECD0AF6C5AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A716C59-41AC-4F98-B74A-1ECD0AF6C5AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A716C59-41AC-4F98-B74A-1ECD0AF6C5AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E516FE3-7A6D-45DD-8F85-955A983404A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E516FE3-7A6D-45DD-8F85-955A983404A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E516FE3-7A6D-45DD-8F85-955A983404A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E516FE3-7A6D-45DD-8F85-955A983404A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D03354EF-6A42-40C2-B596-2742DAE472D2}
 		VisualSVNWorkingCopyRoot = .
+		SolutionGuid = {D03354EF-6A42-40C2-B596-2742DAE472D2}
 	EndGlobalSection
 EndGlobal

@@ -12,7 +12,11 @@ namespace Repos.Lib
     /// </summary>
     public class AppConfigurtaionServices
     {
+        /// <summary>
+        /// 配置
+        /// </summary>
         public static IConfiguration Configuration { get; set; }
+
         static AppConfigurtaionServices()
         {
             //ReloadOnChange = true 当appsettings.json被修改时重新加载            
