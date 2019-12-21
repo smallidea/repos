@@ -8,7 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadMe", "ReadMe", "{F0E81A32-4312-4A9C-8D51-5F99154B502E}"
 	ProjectSection(SolutionItems) = preProject
 		ReadMe\DataBase.sql = ReadMe\DataBase.sql
-		ReadMe.md = ReadMe.md
+		ReadMe\readme.md = ReadMe\readme.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Log4Net.JasonLog.Core", "Log4Net.JasonLog.Core\Log4Net.JasonLog.Core.csproj", "{2E516FE3-7A6D-45DD-8F85-955A983404A3}"
@@ -32,7 +32,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		VisualSVNWorkingCopyRoot = .
 		SolutionGuid = {D03354EF-6A42-40C2-B596-2742DAE472D2}
+		VisualSVNWorkingCopyRoot = .
 	EndGlobalSection
 EndGlobal
