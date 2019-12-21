@@ -103,7 +103,7 @@ namespace Repos.Controllers
             StringBuilder sb = new StringBuilder("delete from [MyRepos];");
             foreach (var id in ids)
             {
-                sb.Append($@"insert into MyRepos([ID], [CreateTime]) values({id}, getdate());");
+                sb.Append($"insert into MyRepos([ID], [CreateTime]) values({id}, getdate());");
             }
             var result = _sqlHelper.ExecuteNonQuery(sb.ToString());
             return result > 0;
